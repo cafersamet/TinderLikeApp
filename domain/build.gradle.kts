@@ -34,10 +34,15 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+    implementation(libs.gson)
+
+    // Test
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.cash.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
 }

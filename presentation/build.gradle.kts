@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tinderlikeapp.ui"
+    namespace = "com.timberlikeapp.presentation"
     compileSdk = 34
 
     defaultConfig {
