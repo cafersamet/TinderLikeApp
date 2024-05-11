@@ -21,3 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "TinderLikeApp"
 include(":app")
+include(":data")
+include(":domain")
+include(":ui")
