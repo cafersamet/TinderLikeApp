@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
 }
 
 android {
@@ -33,8 +34,14 @@ android {
 }
 
 dependencies {
+    implementation(project(":data"))
+    implementation(project(":test"))
 
     implementation(libs.gson)
+
+    // DI
+    implementation(libs.hilt.android)
+    kapt(libs.dagger.hilt.compiler)
 
     // Test
     testImplementation(libs.mockk)
