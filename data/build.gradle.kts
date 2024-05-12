@@ -34,12 +34,8 @@ android {
 }
 
 dependencies {
-
     // Retrofit
     implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.logging.interceptor)
     implementation(libs.gson)
 
     // Coroutines
@@ -52,4 +48,8 @@ dependencies {
 
     // Test
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.cash.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
