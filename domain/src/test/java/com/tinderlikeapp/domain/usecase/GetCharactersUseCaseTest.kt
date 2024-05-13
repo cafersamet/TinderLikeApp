@@ -1,6 +1,7 @@
 package com.tinderlikeapp.domain.usecase
 
 import app.cash.turbine.test
+import com.tinderlikeapp.data.models.character.APICharactersRequest
 import com.tinderlikeapp.data.models.character.APICharactersResponse
 import com.tinderlikeapp.data.models.character.APIInfo
 import com.tinderlikeapp.data.network.APIError
@@ -13,6 +14,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
+import io.mockk.slot
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -49,8 +51,9 @@ class GetCharactersUseCaseTest {
 
     @Test
     fun `given valid params when execute method called then return success result`() = runTest {
+        val requestBodyCapturingSlot = slot<APICharactersRequest>()
         coEvery {
-            repository.getCharacters(any())
+            repository.getCharacters(capture(requestBodyCapturingSlot))
         }.returns(
             APIResult.Success(
                 data = APICharactersResponse(
@@ -87,13 +90,19 @@ class GetCharactersUseCaseTest {
             assertNull(successResult.prev)
             awaitComplete()
         }
+        val capturedRequestBody = requestBodyCapturingSlot.captured
+        assertEquals(20, capturedRequestBody.counts)
+        assertEquals(1, capturedRequestBody.pages)
+        assertNull(capturedRequestBody.next)
+        assertNull(capturedRequestBody.prev)
     }
 
     @Test
     fun `given invalid params when execute method called then return error result`() = runTest {
-       val expectedMessage = "Something went wrong"
+        val expectedMessage = "Something went wrong"
+        val requestBodyCapturingSlot = slot<APICharactersRequest>()
         coEvery {
-            repository.getCharacters(any())
+            repository.getCharacters(capture(requestBodyCapturingSlot))
         }.returns(
             APIResult.Error(
                 apiError = APIError(
@@ -123,51 +132,63 @@ class GetCharactersUseCaseTest {
             assertEquals(expectedMessage, errorResult.message)
             cancelAndConsumeRemainingEvents()
         }
+        val capturedRequestBody = requestBodyCapturingSlot.captured
+        assertEquals(2000, capturedRequestBody.counts)
+        assertEquals(1, capturedRequestBody.pages)
+        assertNull(capturedRequestBody.next)
+        assertNull(capturedRequestBody.prev)
     }
 
     @Test
-    fun `given valid params with next is not null when execute method called then return success result`() = runTest {
-        val expectedResult = GetCharacterUseCaseResult.Success(
-            characters = emptyList(),
-            next = "https://rickandmortyapi.com/api/character/?page=3",
-            prev = "https://rickandmortyapi.com/api/character/?page=2"
-        )
-        coEvery {
-            repository.getCharacters(any())
-        }.returns(
-            APIResult.Success(
-                data = APICharactersResponse(
-                    info = APIInfo(
-                        count = 20,
-                        pages = 2,
-                        next = "https://rickandmortyapi.com/api/character/?page=3",
-                        prev = "https://rickandmortyapi.com/api/character/?page=2"
-                    ),
-                    results = emptyList()
+    fun `given valid params with next is not null when execute method called then return success result`() =
+        runTest {
+            val expectedResult = GetCharacterUseCaseResult.Success(
+                characters = emptyList(),
+                next = "https://rickandmortyapi.com/api/character/?page=3",
+                prev = "https://rickandmortyapi.com/api/character/?page=2"
+            )
+            val requestBodyCapturingSlot = slot<APICharactersRequest>()
+            coEvery {
+                repository.getCharacters(capture(requestBodyCapturingSlot))
+            }.returns(
+                APIResult.Success(
+                    data = APICharactersResponse(
+                        info = APIInfo(
+                            count = 20,
+                            pages = 2,
+                            next = "https://rickandmortyapi.com/api/character/?page=3",
+                            prev = "https://rickandmortyapi.com/api/character/?page=2"
+                        ),
+                        results = emptyList()
+                    )
                 )
             )
-        )
-        every {
-            characterEntityToDomainModelMapper.mapToDomainModel(any())
-        }.returns(emptyList())
+            every {
+                characterEntityToDomainModelMapper.mapToDomainModel(any())
+            }.returns(emptyList())
 
-        val param = GetCharactersUseCaseParam(
-            counts = 20,
-            pages = 1,
-            next = "https://rickandmortyapi.com/api/character/?page=2",
-            prev = "https://rickandmortyapi.com/api/character/?page=1"
-        )
-        val resultFlow = getCharactersUseCase
-            .execute(param)
-            .asFlow()
+            val param = GetCharactersUseCaseParam(
+                counts = 20,
+                pages = 1,
+                next = "https://rickandmortyapi.com/api/character/?page=2",
+                prev = "https://rickandmortyapi.com/api/character/?page=1"
+            )
+            val resultFlow = getCharactersUseCase
+                .execute(param)
+                .asFlow()
 
-        resultFlow.test {
-            val useCaseResult = awaitItem()
-            assertTrue(useCaseResult is GetCharacterUseCaseResult.Success)
-            val successResult = useCaseResult as GetCharacterUseCaseResult.Success
-            assertEquals(expectedResult, successResult)
-            awaitComplete()
+            resultFlow.test {
+                val useCaseResult = awaitItem()
+                assertTrue(useCaseResult is GetCharacterUseCaseResult.Success)
+                val successResult = useCaseResult as GetCharacterUseCaseResult.Success
+                assertEquals(expectedResult, successResult)
+                awaitComplete()
+            }
+            val capturedRequestBody = requestBodyCapturingSlot.captured
+            assertEquals(20, capturedRequestBody.counts)
+            assertEquals(1, capturedRequestBody.pages)
+            assertEquals("https://rickandmortyapi.com/api/character/?page=2", capturedRequestBody.next)
+            assertEquals("https://rickandmortyapi.com/api/character/?page=1", capturedRequestBody.prev)
         }
-    }
 
 }
