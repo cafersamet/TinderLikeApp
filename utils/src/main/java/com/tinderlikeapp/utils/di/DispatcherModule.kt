@@ -1,4 +1,4 @@
-package com.tinderlikeapp.data.di
+package com.tinderlikeapp.utils.di
 
 import dagger.Module
 import dagger.Provides

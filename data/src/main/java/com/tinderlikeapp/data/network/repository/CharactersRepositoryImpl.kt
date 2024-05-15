@@ -13,10 +13,7 @@ class CharactersRepositoryImpl @Inject constructor(
         request: APICharactersRequest
     ): APIResult<APICharactersResponse> {
         return charactersApi.getCharacters(
-            page = request.pages,
-            counts = request.counts,
-            next = request.next,
-            prev = request.prev
+            page = request.page,
         )
     }
 }

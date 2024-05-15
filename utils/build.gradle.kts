@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.timberlikeapp.presentation"
+    namespace = "com.tinderlikeapp.utils"
     compileSdk = 34
 
     defaultConfig {
@@ -31,35 +31,14 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":test"))
-    implementation(project(":utils"))
-
-    implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material)
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
 
     // DI
     implementation(libs.hilt.android)
     kapt(libs.dagger.hilt.compiler)
-
-    // Test
-    testImplementation(libs.mockk)
-    testImplementation(libs.mockk.android)
-    testImplementation(libs.cash.turbine)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.junit)
 }

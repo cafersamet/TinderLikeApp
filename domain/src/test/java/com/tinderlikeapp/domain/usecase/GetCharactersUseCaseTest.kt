@@ -72,10 +72,8 @@ class GetCharactersUseCaseTest {
         }.returns(emptyList())
 
         val param = GetCharactersUseCaseParam(
-            counts = 20,
-            pages = 1,
-            next = null,
-            prev = null
+            page = 1,
+            next = null
         )
         val resultFlow = getCharactersUseCase
             .execute(param)
@@ -87,14 +85,11 @@ class GetCharactersUseCaseTest {
             val successResult = useCaseResult as GetCharacterUseCaseResult.Success
             assertTrue(successResult.characters.isEmpty())
             assertNull(successResult.next)
-            assertNull(successResult.prev)
             awaitComplete()
         }
         val capturedRequestBody = requestBodyCapturingSlot.captured
-        assertEquals(20, capturedRequestBody.counts)
-        assertEquals(1, capturedRequestBody.pages)
+        assertEquals(1, capturedRequestBody.page)
         assertNull(capturedRequestBody.next)
-        assertNull(capturedRequestBody.prev)
     }
 
     @Test
@@ -116,10 +111,8 @@ class GetCharactersUseCaseTest {
         }.returns(emptyList())
 
         val param = GetCharactersUseCaseParam(
-            counts = 2000,
-            pages = 1,
-            next = null,
-            prev = null
+            page = 1,
+            next = null
         )
         val resultFlow = getCharactersUseCase
             .execute(param)
@@ -133,10 +126,8 @@ class GetCharactersUseCaseTest {
             cancelAndConsumeRemainingEvents()
         }
         val capturedRequestBody = requestBodyCapturingSlot.captured
-        assertEquals(2000, capturedRequestBody.counts)
-        assertEquals(1, capturedRequestBody.pages)
+        assertEquals(1, capturedRequestBody.page)
         assertNull(capturedRequestBody.next)
-        assertNull(capturedRequestBody.prev)
     }
 
     @Test
@@ -144,8 +135,7 @@ class GetCharactersUseCaseTest {
         runTest {
             val expectedResult = GetCharacterUseCaseResult.Success(
                 characters = emptyList(),
-                next = "https://rickandmortyapi.com/api/character/?page=3",
-                prev = "https://rickandmortyapi.com/api/character/?page=2"
+                next = "https://rickandmortyapi.com/api/character/?page=3"
             )
             val requestBodyCapturingSlot = slot<APICharactersRequest>()
             coEvery {
@@ -168,10 +158,8 @@ class GetCharactersUseCaseTest {
             }.returns(emptyList())
 
             val param = GetCharactersUseCaseParam(
-                counts = 20,
-                pages = 1,
-                next = "https://rickandmortyapi.com/api/character/?page=2",
-                prev = "https://rickandmortyapi.com/api/character/?page=1"
+                page = 1,
+                next = "https://rickandmortyapi.com/api/character/?page=2"
             )
             val resultFlow = getCharactersUseCase
                 .execute(param)
@@ -185,10 +173,8 @@ class GetCharactersUseCaseTest {
                 awaitComplete()
             }
             val capturedRequestBody = requestBodyCapturingSlot.captured
-            assertEquals(20, capturedRequestBody.counts)
-            assertEquals(1, capturedRequestBody.pages)
+            assertEquals(1, capturedRequestBody.page)
             assertEquals("https://rickandmortyapi.com/api/character/?page=2", capturedRequestBody.next)
-            assertEquals("https://rickandmortyapi.com/api/character/?page=1", capturedRequestBody.prev)
         }
 
 }

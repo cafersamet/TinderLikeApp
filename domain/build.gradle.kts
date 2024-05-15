@@ -36,6 +36,7 @@ android {
 dependencies {
     implementation(project(":data"))
     implementation(project(":test"))
+    implementation(project(":utils"))
 
     implementation(libs.gson)
 

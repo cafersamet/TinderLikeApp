@@ -1,6 +1,6 @@
 package com.tinderlikeapp.domain.usecase
 
-import com.tinderlikeapp.data.di.DefaultDispatcher
+import com.tinderlikeapp.utils.di.DefaultDispatcher
 import com.tinderlikeapp.data.models.character.APICharactersRequest
 import com.tinderlikeapp.data.network.APIResult
 import com.tinderlikeapp.data.network.repository.CharactersRepository
@@ -23,10 +23,8 @@ class GetCharactersUseCase @Inject constructor(
     ): suspend () -> GetCharacterUseCaseResult {
         return suspend {
             val request = APICharactersRequest(
-                counts = param.counts,
-                pages = param.pages,
-                next = param.next,
-                prev = param.prev
+                page = param.page,
+                next = param.next
             )
             when (val result = repository.getCharacters(request)) {
                 is APIResult.Success -> {
@@ -36,8 +34,7 @@ class GetCharactersUseCase @Inject constructor(
                     }
                     GetCharacterUseCaseResult.Success(
                         domainList,
-                        response.info.next,
-                        response.info.prev
+                        response.info.next
                     )
                 }
 
@@ -51,17 +48,14 @@ class GetCharactersUseCase @Inject constructor(
 }
 
 data class GetCharactersUseCaseParam(
-    val counts: Int,
-    val pages: Int,
-    val next: String? = null,
-    val prev: String? = null
+    val page: Int,
+    val next: String? = null
 ) : UseCaseParam
 
 sealed interface GetCharacterUseCaseResult : UseCaseResult {
     data class Success(
         val characters: List<CharacterDomainModel>,
-        val next: String?,
-        val prev: String?
+        val next: String?
     ) : GetCharacterUseCaseResult
 
     data class Error(val message: String?) : GetCharacterUseCaseResult

@@ -34,13 +34,11 @@ android {
 }
 
 dependencies {
+    implementation(project(":utils"))
+
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.gson)
-
-    // Coroutines
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.core)
 
     // DI
     implementation(libs.hilt.android)
